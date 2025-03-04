@@ -15,6 +15,7 @@ requests = "^2.32.3"
 click = "^8.1.8"
 openpyxl = "^3.1.5"
 protobuf = "^5.29.3"
+python-snappy = "^0.7.3"
 
 [tool.poetry.scripts]
 embassaments = "embassaments:server.main"

@@ -3,6 +3,7 @@ import pandas as pd
 import requests
 import time
 import click
+import snappy
 from .metrics_pb2 import Sample, TimeSeries
 
 
@@ -62,8 +63,12 @@ def import_historical_data(data, verbose, url):
 
 
     def send_to_prometheus(data):
-        headers = {"Content-Type": "application/x-protobuf"}
-        response = requests.post(url, data=data, headers=headers)
+        headers = {
+            "Content-Type": "application/x-protobuf",
+            "Content-Encoding": "snappy",
+        }
+        compressed_data = snappy.compress(data)
+        response = requests.post(url, data=compressed_data, headers=headers)
 
         if response.status_code == 200:
             print("Data sent to Prometheus")
