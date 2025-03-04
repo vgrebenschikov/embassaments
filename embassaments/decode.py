@@ -1,4 +1,6 @@
 from prometheus_client import start_http_server, Gauge
+import io
+import requests
 import pdfplumber
 import pandas as pd
 import re
@@ -14,8 +16,11 @@ volume_5y_avg_gauge = Gauge('reservoir_volume_5y_avg', 'Filled volume of the res
 percent_5y_avg_gauge = Gauge('reservoir_percent_5y_avg', 'Percentage filled of the reservoir 5 years average', ['name'])
 
 
-def extract_metrics_from_pdf(pdf_path):
-    with pdfplumber.open(pdf_path) as pdf:
+def extract_metrics_from_pdf(pdf_url):
+    response = requests.get(pdf_url)
+    response.raise_for_status() 
+
+    with pdfplumber.open(io.BytesIO(response.content)) as pdf:
         page = pdf.pages[0]
         tables = page.extract_tables()
 
@@ -32,7 +37,8 @@ def extract_metrics_from_pdf(pdf_path):
             name = sfix(row[0])
             capacity = sfix(row[1])
 
-            if not name or capacity == "Volum màxim":
+            # Skip header and footer of table
+            if name == "TOTAL" or not name or capacity == "Volum màxim":
                 continue
 
             capacity = float(capacity)
@@ -65,5 +71,6 @@ if __name__ == "__main__":
     start_http_server(8000)
     # Generate some requests.
     while True:
-        extract_metrics_from_pdf("/Users/vova/tmp/dades_embassaments_ca.pdf")
+        uri = "https://info.aca.gencat.cat/ca/aca/informacio/informesdwh/dades_embassaments_ca.pdf"
+        extract_metrics_from_pdf(uri)
         time.sleep(60)  # Sleep for 60 seconds before updating metrics again
