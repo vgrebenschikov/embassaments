@@ -44,7 +44,7 @@ def import_historical_data(data, verbose, url):
 
                     sample = ts.samples.add()
                     sample.value = value
-                    sample.timestamp = int(timestamp)
+                    sample.timestamp = timestamp
 
         return request.SerializeToString()
 
