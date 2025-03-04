@@ -21,9 +21,6 @@ def import_historical_data(data, verbose, url):
     data_df = pd.read_excel(data, sheet_name='Sheet1', header=None, skiprows=32, usecols='A:AK')
 
     def generate_prometheus_payload(data_df, labels):
-        time_now = int(time.time() * 1000)
-        timeseries = []
-
         for index, row in data_df.iterrows():
             date_time = pd.to_datetime(row[0], format='%Y-%m-%d %H:%M:%S')
             timestamp = int(date_time.timestamp() * 1_000_000_000)

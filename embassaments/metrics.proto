@@ -6,9 +6,8 @@ message Label {
 }
 
 message Sample {
-  string name = 1;
+  int64 timestamp = 1;
   double value = 2;
-  int64 timestamp = 3;
 }
 
 message TimeSeries {
