@@ -6,7 +6,7 @@ authors = ["Vladimir Grebenshchikov <vova@zote.me>"]
 readme = "README.md"
 
 [tool.poetry.dependencies]
-python = "^3.12"
+python = "^3.10"
 pdfplumber = "^0.11.5"
 pandas = "^2.1.4"
 prometheus-client = "^0.21.1"
