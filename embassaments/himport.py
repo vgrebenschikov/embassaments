@@ -4,8 +4,8 @@ import requests
 import time
 import click
 import snappy
-from .metrics_pb2 import Sample, TimeSeries, WriteRequest
-
+# from .metrics_pb2 import Sample, TimeSeries, WriteRequest
+from .remote_pb2 import Sample, TimeSeries, WriteRequest
 
 @click.command()
 @click.argument('data')
@@ -40,7 +40,7 @@ def import_historical_data(data, verbose, url):
                     ts.labels.add(name="name", value=label)
 
                     sample = ts.samples.add()
-                    sample.value = value
+                    sample.value = float(value)
                     sample.timestamp = timestamp
 
         return request.SerializeToString()
