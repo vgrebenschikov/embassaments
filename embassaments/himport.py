@@ -4,7 +4,7 @@ import requests
 import time
 import click
 import snappy
-from .metrics_pb2 import Sample, TimeSeries
+from .metrics_pb2 import Sample, TimeSeries, WriteRequest
 
 
 @click.command()
@@ -28,38 +28,25 @@ def import_historical_data(data, verbose, url):
             date_time = pd.to_datetime(row[0], format='%Y-%m-%d %H:%M:%S')
             timestamp = int(date_time.timestamp() * 1000)
 
-            timeseries = TimeSeries()  # Создайте объект TimeSeries
-
+            request = WriteRequest()
 
             for i, label in enumerate(labels):
                 capacity = float(capacitys[i])
                 volume = float(row[i + 15])
                 percent = (volume / capacity) * 100 if capacity > 0 else 0
 
-                # metrics = [
-                #     {"name": "reservoir_capacity", "value": capacity},
-                #     {"name": "reservoir_volume", "value": volume},
-                #     {"name": "reservoir_percent", "value": percent},
-                # ]
-
-                # for metric in metrics:
-                #     timeseries.append({
-                #         "labels": [
-                #             {"name": "__name__", "value": metric["name"]},
-                #             {"name": "name", "value": label}
-                #         ],
-                #         "samples": [{"value": metric["value"], "timestamp": int(timestamp)}]
-                #     })
-
                 for metric_name, value in [("reservoir_capacity", capacity), 
                                         ("reservoir_volume", volume), 
                                         ("reservoir_percent", percent)]:
-                    sample = timeseries.samples.add()
-                    sample.name = metric_name
+                    ts = request.timeseries.add()
+                    ts.labels.add(name="__name__", value=metric_name)
+                    ts.labels.add(name="name", value=label)
+
+                    sample = ts.samples.add()
                     sample.value = value
                     sample.timestamp = timestamp
 
-        return timeseries.SerializeToString()
+        return request.SerializeToString()
 
 
     def send_to_prometheus(data):
