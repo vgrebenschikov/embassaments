@@ -1,11 +1,21 @@
 syntax = "proto3";
 
+message Label {
+  string name = 1;
+  string value = 2;
+}
+
 message Sample {
-    string name = 1;
-    double value = 2;
-    int64 timestamp = 3;
+  string name = 1;
+  double value = 2;
+  int64 timestamp = 3;
 }
 
 message TimeSeries {
-    repeated Sample samples = 1;
+  repeated Label labels = 1;
+  repeated Sample samples = 2;
+}
+
+message WriteRequest {
+  repeated TimeSeries timeseries = 1;
 }
