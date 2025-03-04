@@ -8,13 +8,17 @@ readme = "README.md"
 [tool.poetry.dependencies]
 python = "^3.10"
 pdfplumber = "^0.11.5"
+# pdfplumber = { version = "*", optional = true }
 pandas = "^2.1.4"
 prometheus-client = "^0.21.1"
 requests = "^2.32.3"
 click = "^8.1.8"
+openpyxl = "^3.1.5"
+protobuf = "^5.29.3"
 
 [tool.poetry.scripts]
 embassaments = "embassaments:server.main"
+embassaments-import = "embassaments:import_historical_data"
 
 [tool.poetry.group.dev.dependencies]
 ruff = "^0.9.9"

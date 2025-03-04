@@ -1,0 +1,11 @@
+syntax = "proto3";
+
+message Sample {
+    string name = 1;
+    double value = 2;
+    int64 timestamp = 3;
+}
+
+message TimeSeries {
+    repeated Sample samples = 1;
+}
