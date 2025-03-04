@@ -26,7 +26,7 @@ def import_historical_data(data, verbose, url):
 
         for index, row in data_df.iterrows():
             date_time = pd.to_datetime(row[0], format='%Y-%m-%d %H:%M:%S')
-            timestamp = int(date_time.timestamp() * 1000)
+            timestamp = int(date_time.timestamp() * 1_000_000_000)
 
             request = WriteRequest()
 
