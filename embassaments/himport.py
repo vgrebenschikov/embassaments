@@ -1,11 +1,8 @@
-from textwrap import indent
 import pandas as pd
 import requests
-import time
 import click
 import snappy
-# from .metrics_pb2 import Sample, TimeSeries, WriteRequest
-from .remote_pb2 import Sample, TimeSeries, WriteRequest
+from .metrics_pb2 import WriteRequest
 
 @click.command()
 @click.argument('data')

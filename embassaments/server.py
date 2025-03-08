@@ -12,11 +12,11 @@ g_capacity = Gauge("reservoir_capacity", "capacity of the reservoir", ["name"])
 g_volume = Gauge("reservoir_volume", "Current filled volume of the reservoir", ["name"])
 g_percent = Gauge("reservoir_percent", "Percentage filled of the reservoir", ["name"])
 
-g_volume_1y_ago = Gauge('reservoir_volume_1y_ago', 'Filled volume of the reservoir 1 year ago', ['name'])
-g_percent_1y_ago = Gauge('reservoir_percent_1y_ago', 'Percentage filled of the reservoir 1 year ago', ['name'])
+g_volume_1y_ago = Gauge('reservoir_volume_1y_ago', 'Filled volume 1 year ago', ['name'])
+g_percent_1y_ago = Gauge('reservoir_percent_1y_ago', 'Percentage filled 1 year ago', ['name'])
 
-g_volume_5y_avg = Gauge('reservoir_volume_5y_avg', 'Filled volume of the reservoir 5 years average', ['name'])
-g_percent_5y_avg = Gauge('reservoir_percent_5y_avg', 'Percentage filled of the reservoir 5 years average', ['name'])
+g_volume_5y_avg = Gauge('reservoir_volume_5y_avg', 'Filled volume 5 years average', ['name'])
+g_percent_5y_avg = Gauge('reservoir_percent_5y_avg', 'Percentage filled 5 years average', ['name'])
 
 g_total_capacity = Gauge("reservoir_total_capacity", "All reservoirs capacity", ["name"])
 g_total_volume = Gauge("reservoir_total_volume", "All  filled volumes", ["name"])
@@ -25,7 +25,7 @@ g_total_percent = Gauge("reservoir_total_percent", "All reservoirs filled percen
 
 def extract_metrics_from_pdf(pdf_url, verbose=False):
     response = requests.get(pdf_url)
-    response.raise_for_status() 
+    response.raise_for_status()
 
     with pdfplumber.open(io.BytesIO(response.content)) as pdf:
         page = pdf.pages[0]
@@ -33,7 +33,9 @@ def extract_metrics_from_pdf(pdf_url, verbose=False):
 
         df = pd.DataFrame(tables[0])
 
-        date_time = pd.to_datetime(df.iloc[0, 0], format='Data última actualització: %d/%m/%Y %H:%M')
+        date_time = pd.to_datetime(
+            df.iloc[0, 0], format='Data última actualització: %d/%m/%Y %H:%M'
+        )
         timestamp = int(date_time.timestamp())
 
         if verbose:
@@ -50,7 +52,7 @@ def extract_metrics_from_pdf(pdf_url, verbose=False):
                 f'{"Name":30} {"Capacity":>15} {"Volume":>15} {"Percent":>15} '
                 f'{"volume_1y_ago":>15} {"percent_1y_ago":>15} '
                 f'{"volume_5y_avg":>15} {"percent_5y_avg":>15} ',
-                sep=''
+                sep='',
             )
 
         for row in df.itertuples(index=False, name=None):
@@ -97,7 +99,6 @@ def extract_metrics_from_pdf(pdf_url, verbose=False):
             print(80 * '-' + '\n')
 
 
-
 def sfix(s):
     ret = (s or "").replace("\n", " ").replace(",", ".")
     ret = re.sub(r"\(.+?\)", "", ret)
@@ -108,7 +109,11 @@ def sfix(s):
 @click.command()
 @click.option('--verbose', '-v', is_flag=True, help='Enable verbose mode.')
 @click.option('--port', '-p', default=8000, help='Port to run the server on.')
-@click.option('--url', default='https://info.aca.gencat.cat/ca/aca/informacio/informesdwh/dades_embassaments_ca.pdf', help='URL of the PDF file.')
+@click.option(
+    '--url',
+    default='https://info.aca.gencat.cat/ca/aca/informacio/informesdwh/dades_embassaments_ca.pdf',
+    help='URL of the PDF file.',
+)
 @click.option('--address', '-a', default='0.0.0.0', help='Address to bind the server to.')
 def main(verbose, port, url, address):
     if verbose:
@@ -119,13 +124,14 @@ def main(verbose, port, url, address):
 
     # Start up the server to expose the metrics.
     start_http_server(port, addr=address)
-    
+
     # Generate some requests.
     while True:
         extract_metrics_from_pdf(url, verbose=verbose)
         if verbose:
             click.echo("Metrics updated")
-        time.sleep(60*60)  # Sleep for 1 hour before updating metrics again
+        time.sleep(60 * 60)  # Sleep for 1 hour before updating metrics again
+
 
 if __name__ == "__main__":
     main()
